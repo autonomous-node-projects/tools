@@ -1,0 +1,23 @@
+{
+  "name": "@autonomous-node-projects/tools",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "log_example": "node src/examples/log_example.js",
+    "files_example": "node src/examples/files_example.js",
+    "http_example": "node src/examples/http_example.js"
+  },
+  "author": "Daniel Goliszewski",
+  "license": "MIT",
+  "description": "Basic set of tools for autonomous node projects",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "node-abort-controller": "^2.0.0",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.25.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
+  }
+}
