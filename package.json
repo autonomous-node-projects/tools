@@ -1,6 +1,6 @@
 {
   "name": "@autonomous-node-projects/tools",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "src/index.js",
   "scripts": {
     "log_example": "node src/examples/log_example.js",
