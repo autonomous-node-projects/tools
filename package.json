@@ -1,7 +1,8 @@
 {
   "name": "@autonomous-node-projects/tools",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "main": "src/index.js",
+  "keywords": ["filesystem", "logging", "http-client", "toolset"],
   "scripts": {
     "log_example": "node src/examples/log_example.js",
     "files_example": "node src/examples/files_example.js",

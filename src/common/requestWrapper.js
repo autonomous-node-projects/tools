@@ -114,7 +114,7 @@ const SendHTTPrequest = async ({
   } catch (error) {
     if (error.type === 'aborted') {
       return {
-        type: 'aborted',
+        error: 'aborted',
         message: 'Request time has been exceeded',
       };
     }

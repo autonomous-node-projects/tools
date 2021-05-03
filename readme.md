@@ -1,78 +1,114 @@
 # Request tools
 This is set of often used tools while creating autonomic project:
-* Logger
-* HTTP request wrapper
+* Logger 
+    * Auto parsed JSON
+    * Colors per log type
+* HTTP request wrapper 
+    * Auto parsed JSON
+    * Download binary data
 * Files manager
+    * read and store data with easy manager
 
-## Tools:
-### Logger
+## Logger
 Functions:
 ```
-Log('string')
-Log.success('string')
-Log.warn('string')
-Log.error('string')
+Log(string | object)
+Log.success(string | object)
+Log.warn(string | object)
+Log.error(string | object)
 ```
-### HTTP request wrapper
-Can download binary data - example:
+*While logging object it will be stringified with additional message: `[Log: This is stringified Object]`*
+
+## HTTP request wrapper
+
+### To download binary data - example :
 ```
-  const requestConfig = {
+const requestConfig = {
     url: 'https://someurl/file.jpg',
     method: 'GET',
-    timeout: 1000,
+    timeout: 2000,
     headers: {},
     data: {},
     dataDirectory: 'data/',
-    debug: true,
+    debug: false,
 }
 const result = await SendHTTPrequest(requestConfig);
-Log(result.data);
+if(result.status === 200){  
+    Log(result.data);
+}
 ```
 
-Can download any text (JSON is auto parsing) - example:
+### To download any text (JSON is auto parsed) - example :
 ```
-  const requestConfig = {
+const requestConfig = {
     url: 'https://someurl/endpointForJSON',
     method: 'POST',
-    timeout: 1000,
+    timeout: 1500,
     headers: {},
     data: {},
-    debug: true,
+    debug: false,
 }
 const result = await SendHTTPrequest(requestConfig);
-Log(JSON.stringify(result.data, null, 2));
+if(result.status === 200){  
+    Log(result.data);
+}
 ```
-
-### Files manager
-At first create dataManager object
+Both examples will return:
+* on success: HTTP response object (`data` key is body from response)
+* on error: error object - example :
+```
+{
+    error: 'error type',
+    message: 'error details',
+}
+```
+## Files manager
+At first create dataManager object with path to directory (Realtive to project directory)
 ```
 const manager = new dataManager('data/');
 ```
 
-* to store data
+### To store data - example :
 ```
 const save = async () => {
-  // Try to save json data
-  const object = { testKey: 'testValue' };
-  await manager.storeData(object, 'test_dir/JSONFILE.json');
+    // Try to save json data
+    const object = { testKey: 'testValue' };
+    // relative directory if not existing will be created
+    await manager.storeData(object, 'test_dir/JSONFILE.json');
 
-  // Try to load string data
-  const string = 'Test string';
-  await manager.storeData(string, 'test_dir/TEXTFILE.txt');
+    // Try to load string data
+    const string = 'Test string';
+    await manager.storeData(string, 'test_dir/TEXTFILE.txt');
 };
 ```
+It will return:
+* on success: `True`
+* on error: error object
 
-* to read data
+### To read data - example :
 ```
 const read = async () => {
-  // Try to read json data
-  const json = await manager.readData('test_dir/JSONFILE.json');
-  Log.success(JSON.stringify(json, null, 2));
+    // Try to read json data
+    const json = await manager.readData('test_dir/JSONFILE.json');
+    if(!json.error){
+      Log.success(json);
+    }
 
-  // Try to load string data
-  const txt = await manager.readData('test_dir/TEXTFILE.txt');
-  Log.success(txt);
+    // Try to load string data
+    const txt = await manager.readData('test_dir/TEXTFILE.txt');
+    if(!txt.error){
+      Log.success(txt);
+    }
 };
 ```
+It will return:
+* on success: data from file
+* on error: error object - example :
+```
+{
+    error: 'Read error',
+    message: 'Couldn't read data from file',
+}
+```
 
-**ALL EXAMPLES ARE UNDER: `src/examples/`**
+**ALL EXAMPLES ARE UNDER: `package_name/src/examples/`**

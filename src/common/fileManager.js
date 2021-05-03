@@ -1,12 +1,10 @@
+/* eslint-disable func-names */
 const fs = require('fs');
 const path = require('path');
 const Log = require('./logger');
 
-//
-// Read data
-//
-const readFile = (dataPath, filenameWithExt) => {
-  const dataFile = dataPath + filenameWithExt;
+const readFile = (dataPath, exactPathFileWithExt) => {
+  const dataFile = dataPath + exactPathFileWithExt;
   return new Promise((resolve, reject) => {
     try {
       const data = fs.readFileSync(dataFile).toString();
@@ -25,11 +23,8 @@ const readFile = (dataPath, filenameWithExt) => {
   });
 };
 
-//
-// Save data
-//
-const saveToFile = (dataPath, pureData, filenameWithExt) => new Promise((resolve, reject) => {
-  const dataFile = dataPath + filenameWithExt;
+const saveToFile = (dataPath, pureData, exactPathFileWithExt) => new Promise((resolve, reject) => {
+  const dataFile = dataPath + exactPathFileWithExt;
   const pathToDataFile = dataFile.substring(0, dataFile.lastIndexOf('/'));
   try {
     fs.mkdirSync(pathToDataFile, { recursive: true });
@@ -40,10 +35,16 @@ const saveToFile = (dataPath, pureData, filenameWithExt) => new Promise((resolve
   }
 });
 
+/**
+     * dataManager
+     * @param {any} dataDirectory relative path to data .
+     * @param {String} debug set true if debug information is needed.
+     * @returns {Object} An object providing read and store data functions.
+  */
 class dataManager {
-  constructor(datafolder, debug) {
+  constructor(dataDirectory, debug) {
   // All data have to be stored in ${this.dataMainFolder} directory
-    this.dataMainFolder = path.normalize(path.join(process.cwd(), `/${datafolder}`));
+    this.dataMainFolder = path.normalize(path.join(process.cwd(), `/${dataDirectory}`));
     this.debug = debug;
   }
 }
@@ -51,45 +52,49 @@ class dataManager {
 /**
      * Store data
      * @param {any} Data which will be saved.
-     * @param {String} filenameWithExt path to file which will be saved under 'data' directory.
+     * @param {String} exactPathFileWithExt path to file which will be saved under 'data' directory.
      * @returns {Boolean} An response if data has been saved correctly (True) or not (False).
   */
-dataManager.prototype.storeData = async function (data, filenameWithExt) {
+dataManager.prototype.storeData = async function (data, exactPathFileWithExt) {
+  Log(this);
   let dataToBeSaved = data;
   if (typeof (data) === 'object') {
     dataToBeSaved = JSON.stringify(data, null, 2);
   }
 
   try {
-    const result = await saveToFile(this.dataMainFolder, dataToBeSaved, filenameWithExt);
+    const result = await saveToFile(this.dataMainFolder, dataToBeSaved, exactPathFileWithExt);
     if (this.debug) {
-      Log.success(`Saved data to ${this.dataMainFolder}${filenameWithExt}`);
+      Log.success(`Saved data to ${this.dataMainFolder}${exactPathFileWithExt}`);
     }
     return result;
   } catch (error) {
     if (this.debug) {
-      Log.error(`Cant save data to ${this.dataMainFolder}${filenameWithExt}`);
+      Log.error(`Cant save data to ${this.dataMainFolder}${exactPathFileWithExt}`);
     }
-    return false;
+    return {
+      error: 'Save error',
+      message: "couldn't read data from file ",
+    };
   }
 };
 
 /**
      * Read data
-     * @param {String} filenameWithExt path to file which will be read under 'data' directory.
+     * @param {String} exactPathFileWithExt path to file which will be read under 'data' directory.
      * @returns {Any} An data from file or Boolean = False if data couldn't be read.
   */
-dataManager.prototype.readData = async function (filenameWithExt) {
+dataManager.prototype.readData = async function (exactPathFileWithExt) {
   try {
-    const result = await readFile(this.dataMainFolder, filenameWithExt);
+    const result = await readFile(this.dataMainFolder, exactPathFileWithExt);
     return result;
   } catch (error) {
     if (this.debug) {
-      Log.error(`Cant read data from ${this.dataMainFolder}${filenameWithExt}`);
+      Log.error(`Cant read data from ${this.dataMainFolder}${exactPathFileWithExt}`);
     }
     return {
-      type: 'no data',
-      message: "couldn't read data from file ",
+      error: 'Read error',
+      message: "couldn't read data from file",
     };
   }
 };

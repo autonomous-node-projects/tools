@@ -6,19 +6,24 @@ const getRequest = async () => {
   const dogImage = await SendHTTPrequest({
     url: 'https://dog.ceo/api/breeds/image/random',
     method: 'GET',
-    timeout: 1000,
+    timeout: 2000,
     data: {},
   });
-
-  const result = await SendHTTPrequest({
-    url: dogImage.data.message,
-    method: 'GET',
-    timeout: 1000,
-    dataDirectory: 'data/',
-    debug: true,
-  });
-
-  Log(result.data);
+  if (dogImage.status === 200) {
+    const result = await SendHTTPrequest({
+      url: dogImage.data.message,
+      method: 'GET',
+      timeout: 4000,
+      dataDirectory: 'data/',
+    });
+    if (result.data) {
+      Log(result.data);
+    } else {
+      Log.error(result);
+    }
+  } else {
+    Log.error(dogImage);
+  }
 };
 
 getRequest();
